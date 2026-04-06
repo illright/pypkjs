@@ -28,11 +28,13 @@ from pypkjs.timeline.urls import URLManager
 class Runner(object):
     PBW = collections.namedtuple('PBW', ('uuid', 'src', 'manifest', 'layouts', 'prefixes'))
 
-    def __init__(self, qemu, pbws, persist_dir=None, oauth_token=None, layout_file=None, block_private_addresses=False):
+    def __init__(self, qemu, pbws, persist_dir=None, oauth_token=None, layout_file=None, block_private_addresses=False, latitude=None, longitude=None):
         self.qemu = qemu
         self.pebble = PebbleManager(qemu)
         self.persist_dir = persist_dir
         self.oauth_token = oauth_token
+        self.latitude = latitude
+        self.longitude = longitude
         self.pebble.handle_start = self.handle_start
         self.pebble.handle_stop = self.handle_stop
         # PBL-26034: Due to PBL-24009 we must be sure to respond to appmessages received with no JS running.
@@ -99,7 +101,8 @@ class Runner(object):
             return
         self.running_uuid = pbw.uuid
         self.js = javascript.runtime.JSRuntime(self.pebble, pbw, self, persist_dir=self.persist_dir,
-                                               block_private_addresses=self.block_private_addresses)
+                                               block_private_addresses=self.block_private_addresses,
+                                               latitude=self.latitude, longitude=self.longitude)
         self.js.log_output = lambda m: self.log_output(m)
         self.js.open_config_page = lambda url, callback: self.open_config_page(url, callback)
         gevent.spawn(self.js.run, pbw.src)

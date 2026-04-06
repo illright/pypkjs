@@ -13,7 +13,7 @@ from .events import EventExtension
 
 
 class PebbleKitJS(object):
-    def __init__(self, runtime, pebble, persist=None):
+    def __init__(self, runtime, pebble, persist=None, latitude=None, longitude=None):
         self.runtime = runtime
         self.pebble = Pebble(runtime, pebble)
         self.local_storage = LocalStorage(runtime, persist)
@@ -22,7 +22,7 @@ class PebbleKitJS(object):
             Console(runtime),
             Performance(runtime),
             self.local_storage,
-            Navigator(runtime),
+            Navigator(runtime, latitude=latitude, longitude=longitude),
             Timers(runtime),
             self.pebble,
             EventExtension(runtime),
