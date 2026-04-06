@@ -101,8 +101,7 @@ class Runner(object):
             return
         self.running_uuid = pbw.uuid
         self.js = javascript.runtime.JSRuntime(self.pebble, pbw, self, persist_dir=self.persist_dir,
-                                               block_private_addresses=self.block_private_addresses,
-                                               latitude=self.latitude, longitude=self.longitude)
+                                               block_private_addresses=self.block_private_addresses)
         self.js.log_output = lambda m: self.log_output(m)
         self.js.open_config_page = lambda url, callback: self.open_config_page(url, callback)
         gevent.spawn(self.js.run, pbw.src)
@@ -140,6 +139,10 @@ class Runner(object):
             self.log_output("No JS found, can't show configuration.")
             return
         self.js.do_config()
+
+    def set_location(self, latitude, longitude):
+        self.latitude = latitude
+        self.longitude = longitude
 
     def log_output(self, message):
         raise NotImplemented

@@ -142,6 +142,7 @@ class WebsocketRunner(Runner):
             0x0a: self.do_config_ws,
             0x0b: self.do_qemu_command,
             0x0c: self.do_timeline_command,
+            0x0d: self.do_set_location,
         }
 
         if opcode in opcode_handlers:
@@ -231,6 +232,13 @@ class WebsocketRunner(Runner):
             traceback.print_exc()
             self.log_output("Pin insert failed: %s: %s" % (type(e).__name__, e))
             ws.send(bytearray([0x0c, 0x01]))
+
+    @must_auth
+    def do_set_location(self, ws, message):
+        if len(message) < 16:
+            return
+        latitude, longitude = struct.unpack('>dd', bytes(message[:16]))
+        self.set_location(latitude, longitude)
 
 
 class WebsocketLogHandler(logging.Handler):

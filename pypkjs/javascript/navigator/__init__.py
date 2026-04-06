@@ -6,11 +6,11 @@ from .geolocation import Geolocation
 
 
 class Navigator(object):
-    def __init__(self, runtime, latitude=None, longitude=None):
+    def __init__(self, runtime):
 
         self._runtime = runtime
 
-        runtime.register_syscall('__get_internal_location', lambda : Geolocation(runtime, latitude=latitude, longitude=longitude))
+        runtime.register_syscall('__get_internal_location', lambda : Geolocation(runtime))
 
         runtime.run_js("""
         navigator = new (function() {

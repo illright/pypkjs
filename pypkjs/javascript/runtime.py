@@ -36,7 +36,7 @@ class Global(v8.JSClass):
             raise e
 
 class JSRuntime(object):
-    def __init__(self, qemu, pbw, runner, persist_dir=None, block_private_addresses=False, latitude=None, longitude=None):
+    def __init__(self, qemu, pbw, runner, persist_dir=None, block_private_addresses=False):
         self.group = gevent.pool.Group()
         self.queue = gevent.queue.Queue()
         self.qemu = qemu
@@ -45,8 +45,6 @@ class JSRuntime(object):
         self.runtime_id = JSRuntime.runtimeCount
         self.persist_dir = persist_dir
         self.block_private_addresses = block_private_addresses
-        self.latitude = latitude
-        self.longitude = longitude
         JSRuntime.runtimeCount += 1
 
     def register_syscall(self, name, call_fn):
@@ -81,7 +79,7 @@ class JSRuntime(object):
                     return proxy;
                 }
             """)
-            self.pjs = PebbleKitJS(self, self.qemu, persist=self.persist_dir, latitude=self.latitude, longitude=self.longitude)
+            self.pjs = PebbleKitJS(self, self.qemu, persist=self.persist_dir)
             self.pjs.do_post_setup()
 
     def run_js(self, src):

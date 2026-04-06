@@ -13,10 +13,8 @@ Coordinates = lambda runtime, *args: v8.JSObject.create(runtime.context.locals.C
 
 
 class Geolocation(object):
-    def __init__(self, runtime, latitude=None, longitude=None):
+    def __init__(self, runtime):
         self.runtime = runtime
-        self.latitude = latitude
-        self.longitude = longitude
 
         runtime.run_js("""
             Position = (function(coords, timestamp) {
@@ -34,8 +32,10 @@ class Geolocation(object):
         """)
 
     def _get_position(self, success, failure):
-        if self.latitude is not None and self.longitude is not None:
-            self.runtime.enqueue(success, Position(self.runtime, Coordinates(self.runtime, self.longitude, self.latitude, 1000), round(time.time() * 1000)))
+        latitude = self.runtime.runner.latitude
+        longitude = self.runtime.runner.longitude
+        if latitude is not None and longitude is not None:
+            self.runtime.enqueue(success, Position(self.runtime, Coordinates(self.runtime, longitude, latitude, 1000), round(time.time() * 1000)))
             return
         try:
             resp = requests.get('https://api.ipify.org')
